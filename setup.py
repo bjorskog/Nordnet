@@ -7,6 +7,7 @@ setup(
     version='0.1.0',
     author='bjorskog',
     author_email='bjorn.skogtro@gmail.com',
+    url='https://github.com/bjorskog/Nordnet',
     packages=['nordnet', 'nordnet.tests'],
     entry_points={
         'console_scripts':[],
