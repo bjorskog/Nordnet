@@ -7,8 +7,8 @@ Module for connecting to the REST services of the API
 import time
 from base64 import b64encode
 from M2Crypto import RSA
-import httplib
-import urllib
+from httplib import HTTPSConnection, HTTPException
+from urllib import urlencode
 from json import loads as jloads
 
 from nordnet.config import NordnetConfig, get_logger
@@ -38,30 +38,42 @@ def make_hash():
 
 def connect():
     """ Establishing a connection """
-    return httplib.HTTPSConnection(config.url)
+    return HTTPSConnection(config.url)
 
 def get_status(connection):
     """ Gets the server status """
     if not connection:
         connection = connect()
+    connectionstring = 'https://' + config.base_url \
+        + '/' + config.api_version, 
+    logger.info('Trying to get status: %s' % connectionstring)
+    logger.info('Applying header: %s' % headers)
     connection.request('GET', 
-                       'https://' + config.base_url \
-                           + '/' + config.api_version, 
+                       connectionstring,
                        '',
                        headers)
-    response = jloads(connection.getresponse().read())
-    return response
+    try:
+        response = connection.getresponse()
+    except HTTPException, exception:
+        logger.error('Error getting status: %s' % exception)
+    return jloads(response().read())
+    
 
 def login(connection, hashkey):
     """ Logs in to the server """
-    parameters = urllib.urlencode({ 'service' : config.service,
-                                    'auth' : hashkey })
+    parameters = urlencode({ 'service' : config.service,
+                             'auth' : hashkey })
 
     connectionstring = 'https://' + config.base_url + '/' \
         + config.api_version + '/login'
+    
     logger.info('Trying to login to REST: %s' % connectionstring)
     logger.info('Applying header: %s' % headers)
     logger.info('Using parameters: %s ' % parameters)
+    
     connection.request('POST', connectionstring, parameters, headers)
-    response = jloads(connection.getresponse().read())
-    return response
+    try:
+        response = connection.getresponse()
+    except HTTPException, exception:
+        logger.error('Not able to login to server: %s' % exception)
+    return jloads(response.read())

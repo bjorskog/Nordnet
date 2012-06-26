@@ -4,9 +4,8 @@
 Module containing different utils
 """
 
-import json
-
 def print_json(j, prefix=''):
+    """ Pretty printing of JSON objects """
     for key, value in j.items():
         if isinstance (value, dict):
             print '%s%s' % (prefix, key)
