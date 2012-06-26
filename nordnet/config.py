@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 """ 
-Class for managing all config-properties
+Module for managing all config-properties and logging
 """
 
 import logging
-import ConfigParser
+from ConfigParser import ConfigParser
 from os.path import dirname, join
 
 CONFIG_FILE = 'nordnet.cfg'
@@ -47,5 +47,38 @@ class NordnetConfig(object):
 
     @property
     def password(self):
-        """ Getting the password """
+        """ Getter for password """
         return self._get_field('Session', 'password')
+    
+    @property
+    def service(self):
+        """ Getter for servicename """
+        return self._get_field('Session', 'service')
+    
+    @property
+    def url(self):
+        """ Getter for url """
+        return self._get_field('Session', 'url')
+
+    @property
+    def base_url(self):
+        """ Getter for the base url """
+        return self._get_field('Session', 'base_url')
+    
+    @property 
+    def api_version(self):
+        """ Getter for api-version """
+        return self._get_field('Session', 'api_version')
+
+    @property
+    def key_path(self):
+        """" Getter for the path to all keys """
+        keypath = self._get_field('System', 'keypath')
+        localpath = "/".join(__file__.split('/')[:-1])
+        return join(localpath, keypath)
+
+    @property
+    def public_key(self):
+        """ Getter for the file to the key-file """
+        keyfile = self._get_field('System', 'keyfile')
+        return join(self.key_path, keyfile)

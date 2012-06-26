@@ -1,3 +1,11 @@
 [Session]
-username=username
-password=password
+# details for the session
+username = xxxxxxx
+password = xxxxxxx
+service = NEXTAPI
+url = api.test.nordnet.se
+api_version = 1
+
+[System]
+# relatice paths here
+keypath = ../keys/
