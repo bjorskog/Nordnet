@@ -18,6 +18,8 @@ setup(
     description='A Python package for connecting to Nordnets API.',
     long_description=open('README.txt').read(),
     install_requires=[
-        "nose >= 1.1.2"
+        "nose >= 1.1.2",
+        "M2Crypto >= 0.21.1",
+        "requests >= 0.13.1"
     ],)
     
