@@ -2,3 +2,4 @@ nordnet.cfg
 nordnet.cfg~
 *~
 *.pyc
+*.log

@@ -26,7 +26,8 @@ def get_logger():
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
-
+    return logger
+    
 class NordnetConfig(object):
     """ Config-class for the config """
     

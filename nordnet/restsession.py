@@ -11,10 +11,11 @@ import httplib
 import urllib
 from json import loads as jloads
 
-from nordnet.config import NordnetConfig
+from nordnet.config import NordnetConfig, get_logger
 from nordnet.utils import print_json
 
 config = NordnetConfig()
+logger = get_logger()
 
 headers = {
     'Content-type' : 'application/x-www-form-urlencoded',
@@ -30,7 +31,7 @@ def make_hash():
     timestamp = str(int(round(time.time()*1000)))
     auth = b64encode(config.username) + ':' \
         + b64encode(config.password) + ':' \
-        + b64encode(config.username)
+        + b64encode(timestamp)
     rsa = RSA.load_pub_key(config.public_key)
     encrypted_auth = rsa.public_encrypt(auth, RSA.pkcs1_padding)
     return b64encode(encrypted_auth)         
@@ -51,14 +52,16 @@ def get_status(connection):
     response = jloads(connection.getresponse().read())
     return response
 
-def login(connection, hash):
+def login(connection, hashkey):
     """ Logs in to the server """
     parameters = urllib.urlencode({ 'service' : config.service,
-                                    'auth' : hash })
-    connection.request('POST', 
-                       'https://' + config.base_url \
-                           + '/' + config.api_version + '/login',
-                       parameters,
-                       headers)
+                                    'auth' : hashkey })
+
+    connectionstring = 'https://' + config.base_url + '/' \
+        + config.api_version + '/login'
+    logger.info('Trying to login to REST: %s' % connectionstring)
+    logger.info('Applying header: %s' % headers)
+    logger.info('Using parameters: %s ' % parameters)
+    connection.request('POST', connectionstring, parameters, headers)
     response = jloads(connection.getresponse().read())
     return response
