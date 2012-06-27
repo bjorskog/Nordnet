@@ -34,6 +34,7 @@ def make_hash():
         + b64encode(timestamp)
     rsa = RSA.load_pub_key(config.public_key)
     encrypted_auth = rsa.public_encrypt(auth, RSA.pkcs1_padding)
+    logger.info('Made hashkey:')
     return b64encode(encrypted_auth)         
 
 def connect():
@@ -45,31 +46,30 @@ def get_status(connection):
     if not connection:
         connection = connect()
     connectionstring = 'https://' + config.base_url \
-        + '/' + config.api_version, 
+        + '/' + config.api_version
+
     logger.info('Trying to get status: %s' % connectionstring)
     logger.info('Applying header: %s' % headers)
+
     connection.request('GET', 
-                       connectionstring,
+                       connectionstring, 
                        '',
                        headers)
     try:
         response = connection.getresponse()
     except HTTPException, exception:
         logger.error('Error getting status: %s' % exception)
-    return jloads(response().read())
-    
+    return jloads(response.read())
 
 def login(connection, hashkey):
     """ Logs in to the server """
     parameters = urlencode({ 'service' : config.service,
                              'auth' : hashkey })
-
     connectionstring = 'https://' + config.base_url + '/' \
         + config.api_version + '/login'
     
     logger.info('Trying to login to REST: %s' % connectionstring)
     logger.info('Applying header: %s' % headers)
-    logger.info('Using parameters: %s ' % parameters)
     
     connection.request('POST', connectionstring, parameters, headers)
     try:
@@ -77,3 +77,7 @@ def login(connection, hashkey):
     except HTTPException, exception:
         logger.error('Not able to login to server: %s' % exception)
     return jloads(response.read())
+
+def logoff(connection, sessionkey):
+    """ Disconnects from the server """
+    raise NotImplementedError, 'Logoff-method not implemented.'
